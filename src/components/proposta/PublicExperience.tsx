@@ -100,7 +100,6 @@ const SECOES = [
 
 export default function PublicExperience({ d }: { d: PropostaPublica }) {
   const raiz = useRef<HTMLDivElement>(null);
-  const fotoRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const precoRef = useRef<HTMLSpanElement>(null);
@@ -250,42 +249,6 @@ export default function PublicExperience({ d }: { d: PropostaPublica }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ---------- foto com revelação pelo mouse / dedo ---------- */
-  useEffect(() => {
-    const caixa = fotoRef.current;
-    if (!caixa) return;
-    const camada = caixa.querySelector<HTMLElement>("[data-revela-foto]");
-    if (!camada) return;
-    const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let rafId = 0;
-
-    const posiciona = (px: number, py: number) => {
-      camada.style.clipPath = `circle(96px at ${px}% ${py}%)`;
-    };
-    posiciona(50, 38);
-
-    const noMover = (e: PointerEvent) => {
-      const r = caixa.getBoundingClientRect();
-      posiciona(((e.clientX - r.left) / r.width) * 100, ((e.clientY - r.top) / r.height) * 100);
-    };
-    caixa.addEventListener("pointermove", noMover);
-
-    // Sem mouse (celular): o círculo passeia sozinho pela foto
-    if (window.matchMedia("(pointer: coarse)").matches && !reduz) {
-      const inicio = performance.now();
-      const passeio = (t: number) => {
-        const s = (t - inicio) / 1000;
-        posiciona(50 + Math.sin(s * 0.7) * 26, 42 + Math.cos(s * 0.9) * 20);
-        rafId = requestAnimationFrame(passeio);
-      };
-      rafId = requestAnimationFrame(passeio);
-    }
-    return () => {
-      caixa.removeEventListener("pointermove", noMover);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
   const irPara = (id: string) => {
     setIndiceAberto(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -373,7 +336,7 @@ export default function PublicExperience({ d }: { d: PropostaPublica }) {
       <main className="relative z-10">
         {/* ---------- 01 Abertura ---------- */}
         <section id="abertura" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20 pt-32 md:pt-40">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="mx-auto max-w-3xl text-center">
             <div>
               <p data-revela className="inline-flex items-center gap-2 rounded-full border border-linha bg-painel/70 px-4 py-2 text-xs font-bold uppercase tracking-widest text-mudo">
                 <span className="h-2 w-2 rounded-full bg-magenta shadow-[0_0_12px_#D934F7]" />
@@ -391,59 +354,22 @@ export default function PublicExperience({ d }: { d: PropostaPublica }) {
               {d.empresa ? (
                 <p data-revela className="mt-3 text-xl font-semibold text-creme/90">{d.empresa}</p>
               ) : null}
-              <p data-revela className="mt-6 max-w-xl text-lg leading-relaxed text-mudo">
+              <p data-revela className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-mudo">
                 Uma marca com cara de <em className="font-serif text-creme">empresa grande</em>, criada do
                 zero para o seu negócio passar confiança em cada detalhe.
               </p>
-              <div data-revela className="mt-8 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-mudo">
-                <Image src={FOTO_DOUGLAS} alt="Douglas, da DSENG DESIGNER" width={38} height={38} className="h-10 w-10 rounded-full object-cover ring-2 ring-magenta/60" />
-                <span>
-                  Preparada por Douglas · DSENG DESIGNER
-                  <span className="mt-1 block font-semibold normal-case tracking-normal text-mudo/80">
-                    {d.hojeLonga} · leitura de {d.leituraMin} min
-                  </span>
+              <div data-revela className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-mudo">
+                Preparada por Douglas · DSENG DESIGNER
+                <span className="mt-1 block font-semibold normal-case tracking-normal text-mudo/80">
+                  {d.hojeLonga} · leitura de {d.leituraMin} min
                 </span>
               </div>
-              <div data-revela className="mt-10 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-mudo">
+              <div data-revela className="mt-10 flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-mudo">
                 <span className="animate-role block h-10 w-[2px] bg-gradient-to-b from-magenta to-transparent" />
                 Role para começar
               </div>
             </div>
 
-            {/* Foto com revelação */}
-            <div data-revela>
-              <div
-                ref={fotoRef}
-                data-cursor
-                className="relative mx-auto aspect-[3/4] w-full max-w-md select-none overflow-hidden rounded-[2rem] border border-linha shadow-[0_0_90px_rgba(139,43,226,0.35)]"
-              >
-                <Image
-                  src={FOTO_DOUGLAS}
-                  alt="Douglas, designer da DSENG"
-                  fill
-                  priority
-                  className="object-cover grayscale contrast-125"
-                  sizes="(max-width: 768px) 90vw, 420px"
-                />
-                <div aria-hidden className="absolute inset-0 bg-violeta/35 mix-blend-multiply" />
-                <Image
-                  data-revela-foto
-                  src={FOTO_DOUGLAS}
-                  alt=""
-                  fill
-                  priority
-                  className="object-cover"
-                  style={{ clipPath: "circle(96px at 50% 38%)" }}
-                  sizes="(max-width: 768px) 90vw, 420px"
-                />
-                <div className="absolute bottom-4 left-1/2 w-max -translate-x-1/2 rounded-full bg-black/55 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-white backdrop-blur">
-                  Passe o mouse · ou o dedo
-                </div>
-              </div>
-              <p className="mt-4 text-center text-xs uppercase tracking-[0.25em] text-mudo">
-                Douglas · designer e fundador da DSENG
-              </p>
-            </div>
           </div>
         </section>
 
