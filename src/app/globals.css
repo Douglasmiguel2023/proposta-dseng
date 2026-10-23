@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+html, body { overflow-x: hidden; background: #09030E; }
+::selection { background: #D934F7; color: #fff; }
+
+/* Esconde o cursor nativo apenas onde o cursor customizado esta ativo */
+@media (pointer: fine) {
+  body.cursor-dseng, body.cursor-dseng a, body.cursor-dseng button { cursor: none; }
+}
+
+/* Marquee de nichos */
+@keyframes dseng-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-marquee { animation: dseng-marquee 30s linear infinite; }
+
+/* Grao sutil sobre a pagina publica */
+.grao::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 70; opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* Linha de rolagem do hero */
+@keyframes dseng-role { 0% { transform: scaleY(0); transform-origin: top; } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.animate-role { animation: dseng-role 2.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee, .animate-role { animation: none !important; }
+  html { scroll-behavior: auto; }
+}
