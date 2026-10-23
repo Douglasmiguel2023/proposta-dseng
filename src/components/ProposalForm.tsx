@@ -62,18 +62,11 @@ export default function ProposalForm({
         <span className={rotulo}>Resumo do projeto</span>
         <textarea name="projetoResumo" rows={3} defaultValue={valores.projetoResumo} className={campo} />
       </label>
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2">
         <label className="block">
-          <span className={rotulo}>Valor à vista (Pix) R$</span>
+          <span className={rotulo}>Valor total (Pix) R$</span>
           <input name="valorVista" required defaultValue={reaisTexto(valores.valorVistaCentavos)} inputMode="decimal" className={campo} />
-        </label>
-        <label className="block">
-          <span className={rotulo}>Valor parcelado R$</span>
-          <input name="valorParcelado" required defaultValue={reaisTexto(valores.valorParceladoCentavos)} inputMode="decimal" className={campo} />
-        </label>
-        <label className="block">
-          <span className={rotulo}>Parcelas no cartão</span>
-          <input name="parcelasCartao" type="number" min={1} max={21} defaultValue={valores.parcelasCartao} className={campo} />
+          <span className="mt-1 block text-xs text-mudo">A página mostra 50% de entrada para início do projeto e 50% na entrega, calculados sozinhos.</span>
         </label>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">

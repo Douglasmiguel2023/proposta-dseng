@@ -12,9 +12,11 @@ const novoSlug = customAlphabet("23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQR
 
 function leProposta(form: FormData) {
   const valorVista = parseReais(String(form.get("valorVista") ?? ""));
-  const valorParcelado = parseReais(String(form.get("valorParcelado") ?? ""));
+  // Pagamento somente via Pix (50% entrada + 50% entrega): os campos antigos
+  // de parcelado/cartão são derivados do valor Pix e não aparecem mais no formulário.
+  const valorParcelado = valorVista;
   const validadeTexto = String(form.get("validade") ?? "");
-  const parcelas = Number(form.get("parcelasCartao") ?? 3);
+  const parcelas = 1;
   if (valorVista === null || valorParcelado === null) throw new Error("Valor invalido");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(validadeTexto)) throw new Error("Validade invalida");
   return {

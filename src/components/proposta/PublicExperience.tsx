@@ -62,7 +62,7 @@ const GARANTIAS = [
   },
   {
     titulo: "Segunda metade só na entrega",
-    texto: "Na opção entrada + entrega, você paga a segunda metade somente quando receber os arquivos finais aprovados.",
+    texto: "Você paga 50% de entrada para o projeto começar e a segunda metade somente quando receber os arquivos finais aprovados.",
   },
 ];
 const FAQ = [
@@ -88,7 +88,6 @@ function fmt(centavos: number): string {
   return (centavos / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-type Forma = "pix" | "entrada" | "cartao";
 
 const SECOES = [
   { id: "abertura", rotulo: "Proposta" },
@@ -106,22 +105,15 @@ export default function PublicExperience({ d }: { d: PropostaPublica }) {
   const [secao, setSecao] = useState(0);
   const [indiceAberto, setIndiceAberto] = useState(false);
   const [ativo, setAtivo] = useState(0);
-  const [forma, setForma] = useState<Forma>("pix");
   const [faqAberto, setFaqAberto] = useState<number | null>(0);
   const [progresso, setProgresso] = useState(0);
   const arrasto = useRef<{ x: number } | null>(null);
 
   const totalTrabalhos = d.trabalhos.length;
-  const metade = Math.round(d.valorParceladoCentavos / 2);
-  const outraMetade = d.valorParceladoCentavos - metade;
-  const parcela = Math.round(d.valorParceladoCentavos / Math.max(1, d.parcelasCartao));
+  const entrada = Math.round(d.valorVistaCentavos / 2);
+  const restante = d.valorVistaCentavos - entrada;
 
-  const resumoForma =
-    forma === "pix"
-      ? `${fmt(d.valorVistaCentavos)} à vista no Pix`
-      : forma === "entrada"
-        ? `${fmt(metade)} de entrada + ${fmt(outraMetade)} na entrega`
-        : `${d.parcelasCartao}x de ${fmt(parcela)} no cartão`;
+  const resumoForma = `Pix em duas etapas: ${fmt(entrada)} de entrada (50%) para início do projeto + ${fmt(restante)} na entrega`;
 
   const linkAprovacao = `https://wa.me/${WHATS_DSENG}?text=${encodeURIComponent(
     `Olá, Douglas! Sou ${d.clienteNome}${d.empresa ? `, da ${d.empresa}` : ""}. Vi a minha proposta e quero aprovar: projeto ${d.projetoNome}. Forma de pagamento que prefiro: ${resumoForma}.`
@@ -536,54 +528,24 @@ export default function PublicExperience({ d }: { d: PropostaPublica }) {
                 <span ref={precoRef}>{fmt(d.valorVistaCentavos)}</span>
               </p>
               <p className="mt-3 text-mudo">
-                à vista no Pix, ou {d.parcelasCartao}x de {fmt(parcela)} no cartão
+                Pagamento via Pix, em duas etapas: 50% de entrada para o projeto começar e 50% na entrega.
               </p>
 
-              {/* Abas de pagamento */}
-              <div className="mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Forma de pagamento">
-                {(
-                  [
-                    { id: "pix", rotulo: "Pix à vista" },
-                    { id: "entrada", rotulo: "Entrada + entrega" },
-                    { id: "cartao", rotulo: "Cartão" },
-                  ] as { id: Forma; rotulo: string }[]
-                ).map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={forma === t.id}
-                    onClick={() => setForma(t.id)}
-                    className={`rounded-full px-5 py-2.5 text-sm font-bold transition ${
-                      forma === t.id
-                        ? "bg-gradient-to-r from-violeta to-fucsia text-white"
-                        : "border border-linha text-creme hover:border-magenta"
-                    }`}
-                  >
-                    {t.rotulo}
-                  </button>
-                ))}
+              <div className="mt-8 grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl border border-magenta/50 bg-magenta/10 p-5">
+                  <p className="text-xs font-bold uppercase tracking-[0.25em] text-fucsia">Entrada · 50%</p>
+                  <p className="mt-2 text-3xl font-extrabold">{fmt(entrada)}</p>
+                  <p className="mt-1 text-mudo">Para o início do projeto: o trabalho de criação começa com a confirmação da entrada.</p>
+                </div>
+                <div className="rounded-2xl border border-linha bg-fundo/60 p-5">
+                  <p className="text-xs font-bold uppercase tracking-[0.25em] text-mudo">Na entrega · 50%</p>
+                  <p className="mt-2 text-3xl font-extrabold">{fmt(restante)}</p>
+                  <p className="mt-1 text-mudo">Somente quando você receber e aprovar os arquivos finais.</p>
+                </div>
               </div>
-              <div className="mt-5 rounded-2xl border border-linha bg-fundo/60 p-5">
-                {forma === "pix" ? (
-                  <p className="text-lg">
-                    <strong>{fmt(d.valorVistaCentavos)}</strong> no Pix, à vista.
-                    {d.valorParceladoCentavos > d.valorVistaCentavos
-                      ? ` São ${fmt(d.valorParceladoCentavos - d.valorVistaCentavos)} a menos que no parcelado.`
-                      : " Pagamento único e a gente já começa."}
-                  </p>
-                ) : forma === "entrada" ? (
-                  <p className="text-lg">
-                    <strong>{fmt(metade)}</strong> para começar e{" "}
-                    <strong>{fmt(outraMetade)}</strong> somente na entrega dos arquivos finais.
-                  </p>
-                ) : (
-                  <p className="text-lg">
-                    <strong>{d.parcelasCartao}x de {fmt(parcela)}</strong> no cartão de crédito,
-                    total de {fmt(d.valorParceladoCentavos)}.
-                  </p>
-                )}
-              </div>
+              <p className="mt-5 text-lg">
+                Valor total de <strong>{fmt(d.valorVistaCentavos)}</strong>, pago via Pix nas duas etapas.
+              </p>
 
               <a
                 href={linkAprovacao}
@@ -594,7 +556,7 @@ export default function PublicExperience({ d }: { d: PropostaPublica }) {
                 Aprovar pelo WhatsApp
               </a>
               <p className="mt-3 text-center text-sm text-mudo">
-                No WhatsApp a gente confirma a forma de pagamento escolhida: {resumoForma}.
+                No WhatsApp a gente confirma os dados da entrada de 50% e já agenda o início do projeto.
               </p>
             </div>
 
