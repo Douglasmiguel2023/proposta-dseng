@@ -25,7 +25,11 @@ html, body { overflow-x: hidden; background: #09030E; }
 @keyframes dseng-role { 0% { transform: scaleY(0); transform-origin: top; } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
 .animate-role { animation: dseng-role 2.2s ease-in-out infinite; }
 
+/* Flutuação suave (logo da página inicial) */
+@keyframes dseng-flutua { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.animate-flutua { animation: dseng-flutua 5s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee, .animate-role { animation: none !important; }
+  .animate-marquee, .animate-role, .animate-flutua { animation: none !important; }
   html { scroll-behavior: auto; }
 }
